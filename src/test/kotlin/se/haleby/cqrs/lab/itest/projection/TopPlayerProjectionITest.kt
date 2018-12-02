@@ -17,13 +17,12 @@ class TopPlayerProjectionITest : EventSourcingITest() {
     @Test
     fun `when game is not started and CreateGame command is published then game is created`() {
         // Given
-
-        // When
         val gameId1 = uuid()
         val gameId2 = uuid()
         val playerId1 = uuid()
         val playerId2 = uuid()
 
+        // When
         publishSync(
                 CreateGame(gameId1, Date()),
                 MakeMove(gameId1, Date(), playerId1, Rock),

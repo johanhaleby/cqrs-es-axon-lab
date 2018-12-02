@@ -6,9 +6,9 @@ import org.axonframework.modelling.command.AggregateIdentifier
 import org.axonframework.modelling.command.AggregateLifecycle.apply
 import org.axonframework.modelling.command.AggregateRoot
 import se.haleby.cqrs.lab.domain.command.CreateGame
+import se.haleby.cqrs.lab.domain.command.ExpireGame
 import se.haleby.cqrs.lab.domain.command.MakeMove
 import se.haleby.cqrs.lab.domain.event.*
-import se.haleby.cqrs.lab.loggerFor
 import java.util.*
 
 typealias GameId = String
@@ -21,7 +21,7 @@ data class PlayerMove(val playerId: PlayerId, val move: Move) {
 }
 
 sealed class GameState
-object Created : GameState() {}
+object Created : GameState()
 object Ongoing : GameState()
 object Ended : GameState()
 
@@ -31,7 +31,6 @@ class PlayerAlreadyPlayedException : RuntimeException("Player already ended")
 
 @AggregateRoot
 class Game internal constructor() {
-    private val log = loggerFor<Game>()
 
     @AggregateIdentifier
     private lateinit var gameId: GameId
@@ -74,6 +73,14 @@ class Game internal constructor() {
                 apply(GameEnded(gameId))
             }
             Ended -> throw GameAlreadyEndedException()
+        }
+    }
+
+    @CommandHandler
+    fun handle(cmd: ExpireGame) {
+        if (gameState != Ended) {
+            apply(GameAborted(cmd.gameId))
+            apply(GameEnded(cmd.gameId))
         }
     }
 

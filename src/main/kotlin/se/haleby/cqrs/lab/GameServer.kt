@@ -8,6 +8,7 @@ import org.axonframework.eventsourcing.eventstore.inmemory.InMemoryEventStorageE
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import se.haleby.cqrs.lab.domain.model.Game
+import se.haleby.cqrs.lab.domain.model.GameIdlePolicy
 import se.haleby.cqrs.lab.domain.projection.TopPlayerProjection
 import java.util.*
 
@@ -38,11 +39,13 @@ class GameServer {
     private fun configureAxon(vararg projections: Any): Configuration {
         val eventProcessingModule = EventProcessingModule()
         Arrays.stream(projections).forEach { projection -> eventProcessingModule.registerEventHandler { projection } }
+        eventProcessingModule.registerSaga(GameIdlePolicy::class.java)
         return DefaultConfigurer.defaultConfiguration()
                 .configureAggregate<Game>(Game::class.java)
                 .configureEventStore { EmbeddedEventStore.builder().storageEngine(InMemoryEventStorageEngine()).build() }
                 .registerModule(eventProcessingModule)
                 // .registerQueryHandler(c -> projection)
                 .buildConfiguration()
+
     }
 }
