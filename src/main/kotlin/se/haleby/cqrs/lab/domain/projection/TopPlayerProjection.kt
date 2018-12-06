@@ -8,7 +8,7 @@ open class TopPlayerProjection {
 
 //    @EventHandler
 //    fun on(evt: SomeEvent) {
-//        ongoingGames.add(OngoingGame(evt.gameId, evt.player))
+//       
 //    }
 
 //    @EventHandler
